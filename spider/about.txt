@@ -1,0 +1,17 @@
+说明：
+1. 数据库字段设计：
+	singer_id: 歌手id
+	sing_name: 歌手名称 
+	album_id: 专辑id
+	album_name: 专辑名称
+	songs_num: 每张专辑中的歌曲数目
+	release_date: 专辑发布时间
+	sharnings_num: 专辑分享次数
+	reviews_num: 专辑评论次数
+2. scrapy框架使用方法：
+	新建工作目录，使用命令scrapy startproject neteasymusic新建scrapy项目
+	编写items.py，构建需要爬取的字段
+	编写pipelines.py，功能是将数据存入mysql数据库
+	修改settings.py，启用pipelines，禁用cookie，不遵循robot协议
+	使用命令scrapy genspider -t basic musicpider 建立musicspider.py文件，主要的爬虫代码就在此文件中
+	使用命令scrapy crawl musicpider 运行爬虫
