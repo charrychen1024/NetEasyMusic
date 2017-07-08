@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>歌手数据分析</title>
+	<script src="../echarts.js"></script>
+	<script src="../jquery-3.2.1.min.js"></script>
+</head>
+<body>
+	<div id="main" style="width: 1450px;height: 800px"></div>
+	<script type="text/javascript">
+		var mychart = echarts.init(document.getElementById('main'));
+		var colors = ['#5793f3', '#d14a61', '#675bba'];
+		var option = {
+			title: {
+				text: '歌手信息展示',
+				left: 'center'
+			},
+			tooltip: {	//交互提示
+				trigger: 'axis',
+				axisPointer: {
+					type: 'cross'
+				}
+			},
+			toolbox: {	//工具箱
+				show: true,
+				orient: 'horizontal',
+				feature: {
+					dataView: {readOnly: true},
+					magicType: {type: ['line','bar']},
+					restore: true,
+					saveAsImage: {}
+				}
+			},
+			xAxis: {
+				type: 'category',
+				data: []
+			},
+			yAxis: [	//多y轴
+				{
+					name: '歌曲数',
+					type: 'value',
+					position: 'left',
+					axisLine: {
+						lineStyle: {
+							color: colors[0]
+						}
+					},
+					axisLabel: {
+						formatter: '{value} 首'
+					},
+					splitLine: {
+						show: false
+					}
+				},
+				{
+					name: '分享数',
+					type: 'value',
+					position: 'right',
+					axisLine: {
+						lineStyle: {
+							color: colors[1]
+						}
+					},
+					axisLabel: {
+						formatter: '{value} 次'
+					},
+					splitLine: {
+						show: false
+					}
+				},
+				{
+					name: '评论数',
+					type: 'value',
+					position: 'right',
+					offset: 80,
+					axisLine: {
+						lineStyle: {
+							color: colors[2]
+						}
+					},
+					axisLabel: {
+						formatter: '{value} 次'
+					},
+					splitLine: {
+						show: false
+					}
+				}
+			],
+			series: [	//添加系列数组
+				{
+					name: '歌曲总数',
+					type: 'bar',
+					data: [],
+					markline: {
+						data: [
+							{type: 'average', name: '平均值'}
+						]
+					}
+				},
+				{
+					name: '分享总数',
+					type: 'bar',
+					data: [],
+					markline: {
+						data: [
+							{type: 'average', name: '平均值'}
+						]
+					}
+				},
+				{
+					name: '评论总数',
+					type: 'bar',
+					data: [],
+					markline: {
+						data: [
+							{type: 'average', name: '平均值'}
+						]
+					}
+				}
+			],
+			legend: {	//添加图例
+				data: ['歌曲总数','分享总数','评论总数'],
+				left: 'center',
+				bottom: 'bottom'
+			},
+			dataZoom: [	//添加数据缩放
+				{
+					type: 'slider',
+					show: 'true',
+					xAxisIndex: [0],
+					start: 0,
+					end: 1
+				
+				},
+				{
+					type: 'inside',
+					show: 'true',
+					xAxisIndex: [0],
+					start: 0,
+					end: 1
+				
+				}
+			],
+			visualMap: [	//添加视觉映射数组
+				{
+					type: 'continuous',
+					min: 0,
+					max: 4000,
+					calculable: true,
+					realtime: true,
+					seriesIndex: 0,
+					left: 'left',
+					top: 'top',
+					text: ['歌曲数（高）', '歌曲数（低）'],
+					color: ['#996666','#FF0000']
+				},
+				{
+					type: 'continuous',
+					min: 0,
+					max: 3000000,
+					calculable: true,
+					realtime: true,
+					seriesIndex: 1,
+					left: 'left',
+					bottom: 'center',
+					text: ['分享数（高）', '分享数（低）'],
+					color: ['#999966','#FFFF00']
+				},
+				{
+					type: 'continuous',
+					min: 0,
+					max: 3000000,
+					calculable: true,
+					realtime:true,
+					seriesIndex: 2,
+					left: 'left',
+					bottom: 'bottom',
+					text: ['评论数（高）', '评论数（低）'],
+					color: ['#5EA26B','#00FF33']
+				}
+			]	
+		};
+		mychart.setOption(option); //建立以上设置好的空坐标系
+		// 异步加载json文件
+		$.get('singer_df.json').done(function (data) {	
+			console.dir(data.data) //控制台显示数据
+			// 读取二维数组
+			xData = data.data.map(function (item) {
+				return item[1]
+			});
+			yData1 = data.data.map(function (item) {
+				return item[3]
+			});
+			yData2 = data.data.map(function (item) {
+				return item[4]
+			});
+			yData3 = data.data.map(function (item) {
+				return item[5]
+			});
+			
+			mychart.setOption({
+				xAxis: {
+					data: xData
+					
+				},
+				series: [
+					{
+						name: '歌曲总数',
+						data: yData1,
+						markline: {
+							data: [
+								{type: 'average', name: '平均值'}
+							]
+						}
+					},
+					{
+						name: '分享总数',
+						data: yData2,
+						yAxisIndex: 1,
+						markline: {
+							data: [
+								{type: 'average', name: '平均值'}
+							]
+						}
+					},
+					
+					{
+						name: '评论总数',
+						data: yData3,
+						yAxisIndex: 2,
+						markline: {
+							data: [
+								{type: 'average', name: '平均值'}
+							]
+						}
+					},
+					
+				]
+			});
+		});
+	</script>
+</body>
+</html>

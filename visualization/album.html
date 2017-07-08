@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>网易云音乐专辑数据分析</title>
+	<script src='../echarts.js'></script>
+	<script src="../jquery-3.2.1.min.js"></script>
+</head>
+<body>
+	<div id="main" style="width: 1450px;height: 800px"></div>
+	<script type="text/javascript">
+		var myChart = echarts.init(document.getElementById('main'));
+		var schema = [	//定义tooltip显示数据样式
+			{name: 'sharing', index: 0, text: '分享'},
+			{name: 'review', index: 1, text: '评论'},
+			{name: 'songs', index: 2, text: '歌曲数目'},
+			{name: 'year', index: 3, text: '时间'},
+			{name: 'ab_name', index: 4, text: '专辑'},
+			{name: 'ab_id', index: 5, text: 'ID'}
+		];
+		var itemStyle = {
+				normal: {
+				opacity: 0.8,
+				shadowBlur: 10,
+				shadowOffsetX: 0,
+				shadowOffsetY: 0,
+				shadowColor: 'rgba(0, 0, 0, 0.5)'
+			}
+		};
+		var option = {
+			backgroundColor: '#404a59',
+			title: {
+				text: '专辑信息展示',
+				subtext: '1970年 - 2017年',
+				left: 'left',
+				textStyle: {
+					color: '#ffffff'
+				},
+				subtextStyle: {
+					color: '#ffffff'
+				}
+				
+			},
+			xAxis: {
+				type: 'value',
+				name: '分享数',
+				splitLine: {
+					show: false
+				},
+				axisLine: {
+					lineStyle: {
+						color: '#ccc'
+					}
+				}
+			},
+			yAxis: {
+				type: 'value',
+				name: '评论数',
+				splitLine: {
+					show: false
+				},
+				axisLine: {
+					lineStyle: {
+						color: '#ccc'
+					}
+				}
+			},
+			series: [
+				{
+					name: 'album',
+					type: 'scatter',
+					data: [],
+					//itemStyle: itemStyle
+				}
+			],
+			tooltip: {
+				padding: 10,
+				backgroundColor: '#222',
+				borderColor: '#777',
+				borderWidth: 1,
+				formatter: function(obj) {
+					var val = obj.value;
+					return '<div style="border-bottom: 1px solid rgba(255,255,255,.3); font-size: 18px;padding-bottom: 7px;margin-bottom: 7px">'
+						+ schema[4].text + '：' + val[4] + '</div>'
+						+ schema[0].text + '：' + val[0] + '<br>'
+						+ schema[1].text + '：' + val[1] + '<br>'
+						+ schema[2].text + '：' + val[2] + '<br>'
+						+ schema[3].text + '：' + val[3] + '<br>';
+				}
+			},
+			dataZoom: [
+				{
+					type: 'inside',
+					show: true,
+					xAxisIndex: [0],
+					start: 1,
+					end: 10
+				},
+				{
+					type: 'slider',
+					show: true,
+					xAxisIndex: [0],
+					start: 1,
+					end: 10,
+					textStyle: {
+						color: '#ccc'
+					}
+				},
+				{
+					type: 'inside',
+					show: true,
+					yAxisIndex: [0],
+					start: 1,
+					end: 10
+				},
+				{
+					type: 'slider',
+					show: true,
+					yAxisIndex: [0],
+					start: 1,
+					end: 10,
+					textStyle: {
+						color: '#ccc'
+					}
+				}
+			],
+			toolbox: {
+				show: true,
+				orient: 'horizontal',
+				feature: {
+					dataView: {readOnly: true},
+					restore: true,
+					saveAsImage: {},
+					dataZoom: {}
+				}
+			},
+			visualMap: {
+				type: 'piecewise',
+				pieces: [
+					{gt: 2010, color: '#980000'},
+					{gt: 2000, lte: 2010, color: '#ff0000'},
+					{gt: 1990, lte: 2000, color: '#ff9900'},
+					{gt: 1980, lte: 1990, color: '#ffff00'},
+					{gt: 1970, lte: 1980, color: '#00ff00'},
+					{lte: 1970, color: '#00ffff'}
+				],
+				text: ['年代'],
+				showLabel: true,
+				dimension: 3,
+				//color: ['#d94e5d','#eac736','#50a3ba'],
+				textStyle: {
+					color: '#fff'
+				},
+				itemWidth: 20
+			}
+			
+		};
+		//定义气泡大小缩放函数
+		var sizeFunction = function (x) {
+			var y = Math.sqrt(x / 1e2);
+			return y * 50
+		};
+		
+		myChart.setOption(option);
+		myChart.showLoading();	//显示加载动画
+		$.get('album_df2.json').done(function (data) {
+			console.dir(data.data);
+			myChart.hideLoading(); //隐藏加载动画
+			//创建可用的数据格式[x,y,size]
+			//xData = data.data.map(function)
+			myChart.setOption({
+				
+				series: [
+					{
+						data: data.data,
+						symbolSize: function(val) {
+							return sizeFunction(val[2])
+						}
+					}
+				]
+			});
+		});
+	</script>
+</body>
+</html>

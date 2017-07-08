@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>网易云音乐数据分析-专辑</title>
+	<script src="../echarts.js"></script>
+	<script src="../jquery-3.2.1.min.js"></script>
+</head>
+<body>
+	<div id="main" style="width: 1200px;height: 800px;"></div>
+	<script type="text/javascript">
+		var myChart = echarts.init(document.getElementById('main'));
+		var option = {
+			title: {
+				text: '每年发布专辑总数',
+				subtext: '1970年 - 2017年',
+				left: 'center',
+				top: 'top'
+				
+			},
+			tooltip: {
+				trigger: 'axis',
+				axisPointer: {
+					type: 'cross'
+				}
+			},
+			toolbox: {
+				show: true,
+				orient: 'horizontal',
+				feature: {
+					dataView: {readOnly: true},
+					magicType: {type: ['line','bar']},
+					restore: true,
+					saveAsImage: {}
+				}
+			},
+			xAxis: {
+				min: 'dataMin',
+				max: 'dataMax',
+				data: []
+			},
+			yAxis: {},
+			series: [{
+				name: '专辑',
+				type: 'line',
+				data: []
+			}],
+			legend: {
+				data: ['专辑'],
+				right: 'right',
+				top: 'center'
+			},
+			dataZoom: [
+				{
+					type: 'slider',
+					show: 'true',
+					xAxisIndex: [0],
+					start: 1,
+					end: 20
+				},
+				{
+					type: 'inside',
+					show: 'true',
+					xAxisIndex: [0],
+					start: 1,
+					end: 20
+				}
+				
+			]
+		};
+		myChart.setOption(option);
+		$.get('years.json').done(function (data) {
+			//填入数据
+			myChart.setOption({
+				xAxis: {
+					data: data.index
+				},
+				series: [{
+					name: '专辑',
+					data: data.data
+				}]
+			});
+		});
+	</script>
+	
+</body>
+</html>
